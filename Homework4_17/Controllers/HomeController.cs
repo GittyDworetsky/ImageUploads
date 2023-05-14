@@ -3,6 +3,7 @@ using Homework4_17.Web.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Homework4_17.Web.Controllers
 {
@@ -39,11 +40,69 @@ namespace Homework4_17.Web.Controllers
             };
 
             return View(vm);
-           
+
         }
 
-        
+        public IActionResult ViewImage(int id)
+        {
+
+            List<int> imageIds = HttpContext.Session.Get<List<int>>("imageIds");
+
+            ImagesDb db = new ImagesDb(_connectionString);
+            Image img = db.GetImageById(id);
+            ViewImageViewModel vm = new()
+            {
+                ImageIds = imageIds,
+                Image = img
+            };
+
+            if (TempData["Message"] != null)
+            {
+                vm.Message = (string)TempData["Message"];
+            }
+
+            return View(vm);
+        }
+
+        public IActionResult Password(int id, string password)
+        {
+            ImagesDb db = new ImagesDb(_connectionString);
+            Image img = db.GetImageById(id);
+
+            if (password != img.Password)
+            {
+                TempData["Message"] = $"Incorrect Password, Please Try again";
+            }
+            else
+            {
+                List<int> imageIds = HttpContext.Session.Get<List<int>>("imageIds");
+                imageIds.Add(id);
+                HttpContext.Session.Set("imageIds", imageIds);
+            }
+
+            return RedirectToAction("ViewImage");
+
+        }
+
+
 
 
     }
+
+    public static class SessionExtensions
+    {
+        public static void Set<T>(this ISession session, string key, T value)
+        {
+            session.SetString(key, JsonSerializer.Serialize(value));
+        }
+
+        public static T Get<T>(this ISession session, string key)
+        {
+            string value = session.GetString(key);
+
+            return value == null ? default(T) :
+                JsonSerializer.Deserialize<T>(value);
+        }
+    }
+
 }
