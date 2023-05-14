@@ -1,7 +1,7 @@
 ﻿@model ViewImageViewModel
 
 
-@if(Model.ImageIds.Contains(Model.Image.Id))
+@if(Model.ImageIds != null && Model.ImageIds.Contains(Model.Image.Id))
 {
     <div class="row">
         <div class="col-md-8 offset-md-2">

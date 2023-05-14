@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,15 +43,30 @@ namespace Homework4_17.Data
             var reader = cmd.ExecuteReader();
             reader.Read();
 
-            return new Image
+            Image img = new Image
             {
                 Id = (int)reader["id"],
                 ImagePath = (string)reader["imagePath"],
                 Password = (string)reader["password"],
-                Views = (int)reader["views"]
+                Views = (int)reader["views"] 
 
             };
+
+         
+            return img;           
       
         }
+
+        public void UpdateViews(int id)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE Images SET Views = views + 1 WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+
+        }
+       
     }
 }

@@ -7,6 +7,7 @@ namespace Homework4_17
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddSession();
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -21,7 +22,7 @@ namespace Homework4_17
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
 
             app.UseAuthorization();

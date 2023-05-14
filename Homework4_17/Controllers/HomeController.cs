@@ -49,7 +49,11 @@ namespace Homework4_17.Web.Controllers
             List<int> imageIds = HttpContext.Session.Get<List<int>>("imageIds");
 
             ImagesDb db = new ImagesDb(_connectionString);
+            db.UpdateViews(id);
             Image img = db.GetImageById(id);
+            
+           
+            
             ViewImageViewModel vm = new()
             {
                 ImageIds = imageIds,
@@ -76,11 +80,16 @@ namespace Homework4_17.Web.Controllers
             else
             {
                 List<int> imageIds = HttpContext.Session.Get<List<int>>("imageIds");
+                if(imageIds == null)
+                {
+                    imageIds = new List<int>();
+                }
+
                 imageIds.Add(id);
                 HttpContext.Session.Set("imageIds", imageIds);
             }
 
-            return RedirectToAction("ViewImage");
+            return Redirect($"/home/ViewImage?id={id}");
 
         }
 
